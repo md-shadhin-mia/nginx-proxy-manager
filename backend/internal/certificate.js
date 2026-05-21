@@ -13,11 +13,13 @@ import error from "../lib/error.js";
 import utils from "../lib/utils.js";
 import { debug, ssl as logger } from "../logger.js";
 import certificateModel from "../models/certificate.js";
+import settingModel from "../models/setting.js";
 import tokenModel from "../models/token.js";
 import userModel from "../models/user.js";
 import internalAuditLog from "./audit-log.js";
 import internalHost from "./host.js";
 import internalNginx from "./nginx.js";
+import internalSetting from "./setting.js";
 
 const letsencryptConfig = "/etc/letsencrypt.ini";
 const certbotCommand = "certbot";
@@ -48,22 +50,43 @@ const internalCertificate = {
 	/**
 	 * Triggered by a timer, this will check for expiring hosts and renew their ssl certs if required
 	 */
-	processExpiringHosts: () => {
+	processExpiringHosts: async () => {
 		if (!internalCertificate.intervalProcessing) {
 			internalCertificate.intervalProcessing = true;
-			logger.info(
-				`Renewing SSL certs expiring within ${internalCertificate.renewBeforeExpirationBy[0]} ${internalCertificate.renewBeforeExpirationBy[1]} ...`,
-			);
+
+			// Read auto-renewal settings
+			let autoRenewEnabled = true;
+			let renewDaysBefore = 30;
+
+			try {
+				const autoRenewSetting = await internalSetting.get(null, { id: "auto-renew-enabled" });
+				autoRenewEnabled = autoRenewSetting?.value === "true";
+
+				const daysSetting = await internalSetting.get(null, { id: "auto-renew-days-before" });
+				renewDaysBefore = parseInt(daysSetting?.value || "30", 10);
+			} catch (err) {
+				logger.debug("Could not read auto-renew settings, using defaults");
+			}
+
+			if (!autoRenewEnabled) {
+				logger.info("Auto-renewal is disabled, skipping SSL cert renewal check");
+				internalCertificate.intervalProcessing = false;
+				return;
+			}
+
+			logger.info(`Renewing SSL certs expiring within ${renewDaysBefore} days ...`);
 
 			const expirationThreshold = moment()
-				.add(internalCertificate.renewBeforeExpirationBy[0], internalCertificate.renewBeforeExpirationBy[1])
+				.add(renewDaysBefore, "days")
 				.format("YYYY-MM-DD HH:mm:ss");
 
 			// Fetch all the letsencrypt certs from the db that will expire within the configured threshold
+			// AND have auto_renew enabled
 			certificateModel
 				.query()
 				.where("is_deleted", 0)
 				.andWhere("provider", "letsencrypt")
+				.andWhere("auto_renew", 1)
 				.andWhere("expires_on", "<", expirationThreshold)
 				.then((certificates) => {
 					if (!certificates?.length) {
@@ -1261,6 +1284,51 @@ const internalCertificate = {
 
 	getLiveCertPath: (certificateId) => {
 		return `/etc/letsencrypt/live/npm-${certificateId}`;
+	},
+
+	/**
+	 * @param   {Access}  access
+	 * @param   {Object}  data
+	 * @param   {number}  data.id
+	 * @param   {boolean} data.auto_renew
+	 * @returns {Promise}
+	 */
+	toggleAutoRenew: async (access, data) => {
+		await access.can("certificates:update", data.id);
+
+		const cert = await certificateModel
+			.query()
+			.where("is_deleted", 0)
+			.andWhere("id", data.id)
+			.first();
+
+		if (!cert) {
+			throw new error.ItemNotFoundError(data.id);
+		}
+
+		await certificateModel
+			.query()
+			.patch({ auto_renew: data.auto_renew ? 1 : 0 })
+			.where("id", data.id);
+
+		// Fetch updated cert
+		const updated = await certificateModel
+			.query()
+			.where("is_deleted", 0)
+			.andWhere("id", data.id)
+			.first();
+
+		await internalAuditLog.add(access, {
+			action: data.auto_renew ? "enabled_auto_renew" : "disabled_auto_renew",
+			object_type: "certificate",
+			object_id: updated.id,
+			meta: {
+				nice_name: updated.nice_name,
+				domain_names: updated.domain_names,
+			},
+		});
+
+		return updated;
 	},
 };
 

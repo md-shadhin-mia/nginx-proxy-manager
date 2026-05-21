@@ -33,6 +33,11 @@
 			"type": "string",
 			"example": "2025-10-28T04:17:54.000Z"
 		},
+		"auto_renew": {
+			"type": "boolean",
+			"description": "Whether to automatically renew this certificate",
+			"default": true
+		},
 		"owner": {
 			"$ref": "./user-object.json"
 		},

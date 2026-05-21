@@ -1,4 +1,5 @@
 import cn from "classnames";
+import { motion } from "framer-motion";
 import type { ReactNode } from "react";
 
 interface Props {
@@ -6,7 +7,7 @@ interface Props {
 	className?: string;
 	type?: "button" | "submit";
 	actionType?: "primary" | "secondary" | "success" | "warning" | "danger" | "info" | "light" | "dark";
-	variant?: "ghost" | "outline" | "pill" | "square" | "action";
+	variant?: "ghost" | "outline" | "pill" | "square" | "action" | "filled";
 	size?: "sm" | "md" | "lg" | "xl";
 	fullWidth?: boolean;
 	isLoading?: boolean;
@@ -23,7 +24,8 @@ interface Props {
 		| "lime"
 		| "green"
 		| "teal"
-		| "cyan";
+		| "cyan"
+		| "magenta";
 	onClick?: () => void;
 }
 function Button({
@@ -44,20 +46,35 @@ function Button({
 	};
 
 	const cns = cn(
-		"btn",
+		"cyber-btn",
 		className,
-		actionType && `btn-${actionType}`,
-		variant && `btn-${variant}`,
-		size && `btn-${size}`,
-		color && `btn-${color}`,
+		actionType === "success" && "cyber-btn--green",
+		actionType === "danger" && "cyber-btn--magenta",
+		actionType === "warning" && "cyber-btn--yellow",
+		variant === "ghost" && "cyber-btn--ghost",
+		variant === "filled" && "cyber-btn--filled",
+		variant === "outline" && "cyber-btn--outline",
+		size === "sm" && "cyber-btn--sm",
+		size === "lg" && "cyber-btn--lg",
+		color === "magenta" && "cyber-btn--magenta",
+		color === "green" && "cyber-btn--green",
+		color === "yellow" && "cyber-btn--yellow",
 		fullWidth && "w-100",
 		isLoading && "btn-loading",
 	);
 
 	return (
-		<button type={type || "button"} className={cns} onClick={myOnClick} disabled={disabled}>
+		<motion.button
+			type={type || "button"}
+			className={cns}
+			onClick={myOnClick}
+			disabled={disabled}
+			whileHover={{ scale: 1.02, y: -2 }}
+			whileTap={{ scale: 0.98 }}
+			transition={{ type: "spring", stiffness: 400, damping: 17 }}
+		>
 			{children}
-		</button>
+		</motion.button>
 	);
 }
 

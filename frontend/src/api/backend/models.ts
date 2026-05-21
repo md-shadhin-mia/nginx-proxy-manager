@@ -90,6 +90,7 @@ export interface Certificate {
 	niceName: string;
 	domainNames: string[];
 	expiresOn: string;
+	autoRenew: boolean;
 	meta: Record<string, any>;
 	owner?: User;
 	proxyHosts?: ProxyHost[];

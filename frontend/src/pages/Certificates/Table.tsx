@@ -2,6 +2,7 @@ import { IconDotsVertical, IconDownload, IconRefresh, IconTrash } from "@tabler/
 import { createColumnHelper, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { useMemo } from "react";
 import type { Certificate } from "src/api/backend";
+import { toggleCertificateAutoRenew } from "src/api/backend/toggleCertificateAutoRenew";
 import {
 	CertificateInUseFormatter,
 	DateFormatter,
@@ -14,6 +15,7 @@ import { TableLayout } from "src/components/Table/TableLayout";
 import { intl, T } from "src/locale";
 import { showCustomCertificateModal, showDNSCertificateModal, showHTTPCertificateModal } from "src/modals";
 import { CERTIFICATES, MANAGE } from "src/modules/Permissions";
+import { toast } from "react-toastify";
 
 interface Props {
 	data: Certificate[];
@@ -22,8 +24,9 @@ interface Props {
 	onDelete?: (id: number) => void;
 	onRenew?: (id: number) => void;
 	onDownload?: (id: number) => void;
+	onAutoRenewToggle?: () => void;
 }
-export default function Table({ data, isFetching, onDelete, onRenew, onDownload, isFiltered }: Props) {
+export default function Table({ data, isFetching, onDelete, onRenew, onDownload, onAutoRenewToggle, isFiltered }: Props) {
 	const columnHelper = createColumnHelper<Certificate>();
 	const columns = useMemo(
 		() => [
@@ -71,6 +74,41 @@ export default function Table({ data, isFetching, onDelete, onRenew, onDownload,
 						return <T id="certificates.custom" />;
 					}
 					return <T id={r.provider} />;
+				},
+			}),
+			columnHelper.accessor((row: any) => row.autoRenew, {
+				id: "autoRenew",
+				header: intl.formatMessage({ id: "certificate.auto-renew" }),
+				cell: (info: any) => {
+					const value = info.getValue();
+					const row = info.row.original;
+					if (row.provider !== "letsencrypt") {
+						return <span className="text-secondary">-</span>;
+					}
+					return (
+						<label className="form-check form-switch mb-0">
+							<input
+								type="checkbox"
+								className="form-check-input"
+								checked={value}
+								onChange={async () => {
+									try {
+										await toggleCertificateAutoRenew(row.id, !value);
+										toast.success(value ? "Auto-renew disabled" : "Auto-renew enabled");
+										onAutoRenewToggle?.();
+									} catch (err) {
+										toast.error(err instanceof Error ? err.message : "Failed to toggle auto-renew");
+									}
+								}}
+							/>
+							<span className="form-check-label small">
+								{value ? <T id="certificate.auto-renew-on" /> : <T id="certificate.auto-renew-off" />}
+							</span>
+						</label>
+					);
+				},
+				meta: {
+					className: "w-1",
 				},
 			}),
 			columnHelper.accessor((row: any) => row.expiresOn, {
@@ -161,7 +199,7 @@ export default function Table({ data, isFetching, onDelete, onRenew, onDownload,
 				},
 			}),
 		],
-		[columnHelper, onDelete, onRenew, onDownload],
+		[columnHelper, onDelete, onRenew, onDownload, onAutoRenewToggle],
 	);
 
 	const tableInstance = useReactTable<Certificate>({

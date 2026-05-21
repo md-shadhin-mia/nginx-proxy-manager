@@ -109,12 +109,13 @@ const HTTPCertificateModal = EasyModal.create(({ visible, remove }: InnerModalPr
 	};
 
 	return (
-		<Modal show={visible} onHide={remove}>
+		<Modal Show={visible} onHide={remove}>
 			<Formik
 				initialValues={
 					{
 						domainNames: [],
 						provider: "letsencrypt",
+						autoRenew: true,
 						meta: {
 							keyType: "ecdsa",
 						},
@@ -169,6 +170,14 @@ const HTTPCertificateModal = EasyModal.create(({ visible, remove }: InnerModalPr
 											</div>
 										)}
 									</Field>
+									<div className="mb-3">
+										<label className="form-check form-switch">
+											<Field name="autoRenew" type="checkbox" className="form-check-input" />
+											<span className="form-check-label">
+												<T id="certificate.auto-renew-checkbox" />
+											</span>
+										</label>
+									</div>
 								</div>
 								{testResults ? (
 									<div className="card-footer">

@@ -4,6 +4,7 @@ import App from "src/App.tsx";
 
 import "@tabler/core/dist/css/tabler.min.css";
 import "@tabler/core/dist/js/tabler.min.js";
+import "./cyberpunk-theme.css";
 import "./App.css";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(

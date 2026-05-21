@@ -352,4 +352,34 @@ router
 		}
 	});
 
+/**
+ * Toggle Auto Renew
+ *
+ * /api/nginx/certificates/123/auto-renew
+ */
+router
+	.route("/:certificate_id/auto-renew")
+	.options((_, res) => {
+		res.sendStatus(204);
+	})
+	.all(jwtdecode())
+
+	/**
+	 * PUT /api/nginx/certificates/123/auto-renew
+	 *
+	 * Toggle auto-renew for a certificate
+	 */
+	.put(async (req, res, next) => {
+		try {
+			const result = await internalCertificate.toggleAutoRenew(res.locals.access, {
+				id: Number.parseInt(req.params.certificate_id, 10),
+				auto_renew: req.body.auto_renew === true || req.body.auto_renew === "true" || req.body.auto_renew === 1,
+			});
+			res.status(200).send(result);
+		} catch (err) {
+			debug(logger, `${req.method.toUpperCase()} ${req.path}: ${err}`);
+			next(err);
+		}
+	});
+
 export default router;

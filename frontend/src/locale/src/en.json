@@ -143,6 +143,21 @@
 	"certificate": {
 		"defaultMessage": "Certificate"
 	},
+	"certificate.auto-renew": {
+		"defaultMessage": "Auto Renew"
+	},
+	"certificate.auto-renew-checkbox": {
+		"defaultMessage": "Automatically renew this certificate before expiry"
+	},
+	"certificate.auto-renew-off": {
+		"defaultMessage": "Auto-renew disabled"
+	},
+	"certificate.auto-renew-on": {
+		"defaultMessage": "Auto-renew enabled"
+	},
+	"certificate.auto-renew-toggle": {
+		"defaultMessage": "Toggle auto-renewal for this certificate"
+	},
 	"certificate.custom-certificate": {
 		"defaultMessage": "Certificate"
 	},
@@ -655,6 +670,18 @@
 	},
 	"settings": {
 		"defaultMessage": "Settings"
+	},
+	"settings.auto-renew": {
+		"defaultMessage": "Auto Renewal"
+	},
+	"settings.auto-renew-days": {
+		"defaultMessage": "Days Before Expiry"
+	},
+	"settings.auto-renew-enabled": {
+		"defaultMessage": "Enable Auto Renewal"
+	},
+	"settings.auto-renew-interval": {
+		"defaultMessage": "Check Interval (Hours)"
 	},
 	"settings.default-site": {
 		"defaultMessage": "Default Site"

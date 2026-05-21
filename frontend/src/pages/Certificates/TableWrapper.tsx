@@ -19,7 +19,7 @@ import Table from "./Table";
 
 export default function TableWrapper() {
 	const [search, setSearch] = useState("");
-	const { isFetching, isLoading, isError, error, data } = useCertificates([
+	const { isFetching, isLoading, isError, error, data, refetch } = useCertificates([
 		"owner",
 		"dead_hosts",
 		"proxy_hosts",
@@ -146,6 +146,7 @@ export default function TableWrapper() {
 					isFetching={isFetching}
 					onRenew={showRenewCertificateModal}
 					onDownload={handleDownload}
+					onAutoRenewToggle={() => refetch()}
 					onDelete={(id: number) =>
 						showDeleteConfirmModal({
 							title: <T id="object.delete" tData={{ object: "certificate" }} />,

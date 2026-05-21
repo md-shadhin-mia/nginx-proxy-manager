@@ -13,7 +13,7 @@ import userModel from "./user.js";
 
 Model.knex(db());
 
-const boolFields = ["is_deleted"];
+const boolFields = ["is_deleted", "auto_renew"];
 
 const cleanDomainNames = (domainNames) => {
 	// Sort domain_names

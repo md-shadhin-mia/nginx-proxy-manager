@@ -1,131 +1,141 @@
-import { IconArrowsCross, IconBolt, IconBoltOff, IconDisc } from "@tabler/icons-react";
+import { type TargetAndTransition, type Transition, motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { HasPermission } from "src/components";
+import { CyberIcon, HasPermission } from "src/components";
 import { useHostReport } from "src/hooks";
 import { T } from "src/locale";
 import { DEAD_HOSTS, PROXY_HOSTS, REDIRECTION_HOSTS, STREAMS, VIEW } from "src/modules/Permissions";
+
+const springTransition: Transition = { type: "spring", stiffness: 100, damping: 15 };
+
+const container = {
+	hidden: { opacity: 0 },
+	show: {
+		opacity: 1,
+		transition: {
+			staggerChildren: 0.1,
+		},
+	},
+};
+
+const item = {
+	hidden: { opacity: 0, y: 20 },
+	show: { opacity: 1, y: 0, transition: springTransition },
+};
 
 const Dashboard = () => {
 	const { data: hostReport } = useHostReport();
 	const navigate = useNavigate();
 
 	return (
-		<div>
-			<h2>
+		<motion.div
+			initial={{ opacity: 0 }}
+			animate={{ opacity: 1 }}
+			transition={{ duration: 0.5 }}
+		>
+			<motion.h2
+				className="page-header"
+				initial={{ x: -20, opacity: 0 } as TargetAndTransition}
+				animate={{ x: 0, opacity: 1 }}
+				transition={{ delay: 0.2 }}
+			>
 				<T id="dashboard" />
-			</h2>
-			<div className="row row-deck row-cards">
+			</motion.h2>
+			<motion.div
+				className="row row-deck row-cards"
+				variants={container}
+				initial="hidden"
+				animate="show"
+			>
 				<div className="col-12 my-4">
 					<div className="row row-cards">
 						<HasPermission section={PROXY_HOSTS} permission={VIEW} hideError>
-							<div className="col-sm-6 col-lg-3">
-								<a
-									href="/nginx/proxy"
-									className="card card-sm card-link card-link-pop"
-									onClick={(e) => {
-										e.preventDefault();
-										navigate("/nginx/proxy");
-									}}
+							<motion.div className="col-sm-6 col-lg-3" variants={item}>
+								<div
+									className="cyber-card cyber-card--interactive cyber-card--green"
+									onClick={() => navigate("/nginx/proxy")}
+									style={{ cursor: "pointer" }}
 								>
-									<div className="card-body">
-										<div className="row align-items-center">
-											<div className="col-auto">
-												<span className="bg-green text-white avatar">
-													<IconBolt />
-												</span>
-											</div>
-											<div className="col">
-												<div className="font-weight-medium">
-													<T id="proxy-hosts.count" data={{ count: hostReport?.proxy }} />
-												</div>
-											</div>
+									<div className="cyber-card__header">
+										<div className="cyber-card__icon">
+											<CyberIcon name="zap" size={24} color="green" />
 										</div>
+										<div className="cyber-card__title">
+											<T id="proxy-hosts" />
+										</div>
+										<span className="cyber-card__badge">
+											{hostReport?.proxy || 0}
+										</span>
 									</div>
-								</a>
-							</div>
+								</div>
+							</motion.div>
 						</HasPermission>
 						<HasPermission section={REDIRECTION_HOSTS} permission={VIEW} hideError>
-							<div className="col-sm-6 col-lg-3">
-								<a
-									href="/nginx/redirection"
-									className="card card-sm card-link card-link-pop"
-									onClick={(e) => {
-										e.preventDefault();
-										navigate("/nginx/redirection");
-									}}
+							<motion.div className="col-sm-6 col-lg-3" variants={item}>
+								<div
+									className="cyber-card cyber-card--interactive cyber-card--yellow"
+									onClick={() => navigate("/nginx/redirection")}
+									style={{ cursor: "pointer" }}
 								>
-									<div className="card-body">
-										<div className="row align-items-center">
-											<div className="col-auto">
-												<span className="bg-yellow text-white avatar">
-													<IconArrowsCross />
-												</span>
-											</div>
-											<div className="col">
-												<T
-													id="redirection-hosts.count"
-													data={{ count: hostReport?.redirection }}
-												/>
-											</div>
+									<div className="cyber-card__header">
+										<div className="cyber-card__icon">
+											<CyberIcon name="arrow-right" size={24} color="yellow" />
 										</div>
+										<div className="cyber-card__title">
+											<T id="redirection-hosts" />
+										</div>
+										<span className="cyber-card__badge">
+											{hostReport?.redirection || 0}
+										</span>
 									</div>
-								</a>
-							</div>
+								</div>
+							</motion.div>
 						</HasPermission>
 						<HasPermission section={STREAMS} permission={VIEW} hideError>
-							<div className="col-sm-6 col-lg-3">
-								<a
-									href="/nginx/stream"
-									className="card card-sm card-link card-link-pop"
-									onClick={(e) => {
-										e.preventDefault();
-										navigate("/nginx/stream");
-									}}
+							<motion.div className="col-sm-6 col-lg-3" variants={item}>
+								<div
+									className="cyber-card cyber-card--interactive"
+									onClick={() => navigate("/nginx/stream")}
+									style={{ cursor: "pointer" }}
 								>
-									<div className="card-body">
-										<div className="row align-items-center">
-											<div className="col-auto">
-												<span className="bg-blue text-white avatar">
-													<IconDisc />
-												</span>
-											</div>
-											<div className="col">
-												<T id="streams.count" data={{ count: hostReport?.stream }} />
-											</div>
+									<div className="cyber-card__header">
+										<div className="cyber-card__icon">
+											<CyberIcon name="signal" size={24} color="cyan" />
 										</div>
+										<div className="cyber-card__title">
+											<T id="streams" />
+										</div>
+										<span className="cyber-card__badge">
+											{hostReport?.stream || 0}
+										</span>
 									</div>
-								</a>
-							</div>
+								</div>
+							</motion.div>
 						</HasPermission>
 						<HasPermission section={DEAD_HOSTS} permission={VIEW} hideError>
-							<div className="col-sm-6 col-lg-3">
-								<a
-									href="/nginx/404"
-									className="card card-sm card-link card-link-pop"
-									onClick={(e) => {
-										e.preventDefault();
-										navigate("/nginx/404");
-									}}
+							<motion.div className="col-sm-6 col-lg-3" variants={item}>
+								<div
+									className="cyber-card cyber-card--interactive cyber-card--magenta"
+									onClick={() => navigate("/nginx/404")}
+									style={{ cursor: "pointer" }}
 								>
-									<div className="card-body">
-										<div className="row align-items-center">
-											<div className="col-auto">
-												<span className="bg-red text-white avatar">
-													<IconBoltOff />
-												</span>
-											</div>
-											<div className="col">
-												<T id="dead-hosts.count" data={{ count: hostReport?.dead }} />
-											</div>
+									<div className="cyber-card__header">
+										<div className="cyber-card__icon">
+											<CyberIcon name="error" size={24} color="magenta" />
 										</div>
+										<div className="cyber-card__title">
+											<T id="dead-hosts" />
+										</div>
+										<span className="cyber-card__badge">
+											{hostReport?.dead || 0}
+										</span>
 									</div>
-								</a>
-							</div>
+								</div>
+							</motion.div>
 						</HasPermission>
 					</div>
 				</div>
-			</div>
-		</div>
+			</motion.div>
+		</motion.div>
 	);
 };
 

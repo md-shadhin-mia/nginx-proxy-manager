@@ -1,15 +1,6 @@
-import {
-	IconBook,
-	IconDeviceDesktop,
-	IconHome,
-	IconLock,
-	IconSettings,
-	IconShield,
-	IconUser,
-} from "@tabler/icons-react";
 import cn from "classnames";
-import React from "react";
-import { HasPermission, NavLink } from "src/components";
+import { motion } from "framer-motion";
+import { CyberIcon, HasPermission, NavLink } from "src/components";
 import { T } from "src/locale";
 import {
 	ACCESS_LISTS,
@@ -26,7 +17,7 @@ import {
 
 interface MenuItem {
 	label: string;
-	icon?: React.ElementType;
+	icon?: string;
 	to?: string;
 	items?: MenuItem[];
 	permissionSection?: Section | typeof ADMIN;
@@ -36,11 +27,11 @@ interface MenuItem {
 const menuItems: MenuItem[] = [
 	{
 		to: "/",
-		icon: IconHome,
+		icon: "home",
 		label: "dashboard",
 	},
 	{
-		icon: IconDeviceDesktop,
+		icon: "server",
 		label: "hosts",
 		items: [
 			{
@@ -71,33 +62,33 @@ const menuItems: MenuItem[] = [
 	},
 	{
 		to: "/access",
-		icon: IconLock,
+		icon: "lock",
 		label: "access-lists",
 		permissionSection: ACCESS_LISTS,
 		permission: VIEW,
 	},
 	{
 		to: "/certificates",
-		icon: IconShield,
+		icon: "shield",
 		label: "certificates",
 		permissionSection: CERTIFICATES,
 		permission: VIEW,
 	},
 	{
 		to: "/users",
-		icon: IconUser,
+		icon: "users",
 		label: "users",
 		permissionSection: ADMIN,
 	},
 	{
 		to: "/audit-log",
-		icon: IconBook,
+		icon: "file-text",
 		label: "auditlogs",
 		permissionSection: ADMIN,
 	},
 	{
 		to: "/settings",
-		icon: IconSettings,
+		icon: "settings",
 		label: "settings",
 		permissionSection: ADMIN,
 	},
@@ -115,16 +106,20 @@ const getMenuItem = (item: MenuItem, onClick?: () => void) => {
 			permission={item.permission || VIEW}
 			hideError
 		>
-			<li className="nav-item">
+			<motion.li
+				className="nav-item"
+				whileHover={{ x: 4 }}
+				transition={{ type: "spring", stiffness: 300, damping: 20 }}
+			>
 				<NavLink to={item.to} onClick={onClick}>
 					<span className="nav-link-icon d-md-none d-lg-inline-block">
-						{item.icon && React.createElement(item.icon, { height: 24, width: 24 })}
+						{item.icon && <CyberIcon name={item.icon} size={24} color="cyan" />}
 					</span>
 					<span className="nav-link-title">
 						<T id={item.label} />
 					</span>
 				</NavLink>
-			</li>
+			</motion.li>
 		</HasPermission>
 	);
 };
@@ -138,7 +133,11 @@ const getMenuDropown = (item: MenuItem, onClick?: () => void) => {
 			permission={item.permission || VIEW}
 			hideError
 		>
-			<li className={cns}>
+			<motion.li
+				className={cns}
+				whileHover={{ x: 4 }}
+				transition={{ type: "spring", stiffness: 300, damping: 20 }}
+			>
 				<a
 					className="nav-link dropdown-toggle"
 					href={item.to}
@@ -148,7 +147,7 @@ const getMenuDropown = (item: MenuItem, onClick?: () => void) => {
 					role="button"
 				>
 					<span className="nav-link-icon d-md-none d-lg-inline-block">
-						<IconDeviceDesktop height={24} width={24} />
+						<CyberIcon name="server" size={24} color="cyan" />
 					</span>
 					<span className="nav-link-title">
 						<T id={item.label} />
@@ -170,7 +169,7 @@ const getMenuDropown = (item: MenuItem, onClick?: () => void) => {
 						);
 					})}
 				</div>
-			</li>
+			</motion.li>
 		</HasPermission>
 	);
 };
@@ -185,7 +184,12 @@ export function SiteMenu() {
 	}, 300);
 
 	return (
-		<header className="navbar-expand-md">
+		<motion.header
+			className="navbar-expand-md"
+			initial={{ opacity: 0, y: -20 }}
+			animate={{ opacity: 1, y: 0 }}
+			transition={{ delay: 0.2, duration: 0.5 }}
+		>
 			<div className="collapse navbar-collapse" id="navbar-menu">
 				<div className="navbar">
 					<div className="container-xl">
@@ -202,6 +206,6 @@ export function SiteMenu() {
 					</div>
 				</div>
 			</div>
-		</header>
+		</motion.header>
 	);
 }

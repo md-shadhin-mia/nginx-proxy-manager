@@ -1,4 +1,5 @@
 export * from "./Button";
+export * from "./CyberIcon";
 export * from "./EmptyData";
 export * from "./ErrorNotFound";
 export * from "./Flag";

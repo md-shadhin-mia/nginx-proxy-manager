@@ -42,6 +42,7 @@ const DNSCertificateModal = EasyModal.create(({ visible, remove }: InnerModalPro
 					{
 						domainNames: [],
 						provider: "letsencrypt",
+						autoRenew: true,
 						meta: {
 							dnsChallenge: true,
 							keyType: "ecdsa",
@@ -89,6 +90,14 @@ const DNSCertificateModal = EasyModal.create(({ visible, remove }: InnerModalPro
 										)}
 									</Field>
 									<DNSProviderFields />
+									<div className="mb-3">
+										<label className="form-check form-switch">
+											<Field name="autoRenew" type="checkbox" className="form-check-input" />
+											<span className="form-check-label">
+												<T id="certificate.auto-renew-checkbox" />
+											</span>
+										</label>
+									</div>
 								</div>
 							</div>
 						</Modal.Body>

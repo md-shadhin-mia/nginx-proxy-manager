@@ -1,5 +1,4 @@
-import { IconLock, IconLogout, IconShieldLock, IconUser } from "@tabler/icons-react";
-import { LocalePicker, NavLink, ThemeSwitcher } from "src/components";
+import { CyberIcon, LocalePicker, NavLink, ThemeSwitcher } from "src/components";
 import { useAuthState } from "src/context";
 import { useUser } from "src/hooks";
 import { T } from "src/locale";
@@ -94,7 +93,7 @@ export function SiteHeader() {
 										showUserModal("me");
 									}}
 								>
-									<IconUser width={18} />
+									<CyberIcon name="user" size={18} color="cyan" />
 									<T id="user.edit-profile" />
 								</a>
 								<a
@@ -105,7 +104,7 @@ export function SiteHeader() {
 										showChangePasswordModal("me");
 									}}
 								>
-									<IconLock width={18} />
+									<CyberIcon name="lock" size={18} color="cyan" />
 									<T id="user.change-password" />
 								</a>
 								<a
@@ -116,7 +115,7 @@ export function SiteHeader() {
 										showTwoFactorModal("me");
 									}}
 								>
-									<IconShieldLock width={18} />
+									<CyberIcon name="shield-check" size={18} color="cyan" />
 									<T id="user.two-factor" />
 								</a>
 								<div className="dropdown-divider" />
@@ -128,7 +127,7 @@ export function SiteHeader() {
 										logout();
 									}}
 								>
-									<IconLogout width={18} />
+									<CyberIcon name="log-out" size={18} color="magenta" />
 									<T id="user.logout" />
 								</a>
 							</div>

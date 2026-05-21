@@ -1,6 +1,6 @@
-import { IconMoon, IconSun } from "@tabler/icons-react";
 import cn from "classnames";
-import { Button } from "src/components";
+import { motion } from "framer-motion";
+import { Button, CyberIcon } from "src/components";
 import { useTheme } from "src/hooks";
 import styles from "./ThemeSwitcher.module.css";
 
@@ -11,7 +11,10 @@ function ThemeSwitcher({ className }: Props) {
 	const { setTheme } = useTheme();
 
 	return (
-		<div className={cn("d-print-none", "d-inline-block", className)}>
+		<motion.div
+			className={cn("d-print-none", "d-inline-block", className)}
+			whileHover={{ scale: 1.1 }}
+		>
 			<Button
 				size="sm"
 				className={cn("btn-ghost-dark", "hide-theme-dark", styles.lightBtn)}
@@ -21,7 +24,12 @@ function ThemeSwitcher({ className }: Props) {
 				data-bs-original-title="Enable dark mode"
 				onClick={() => setTheme("dark")}
 			>
-				<IconMoon width={24} />
+				<motion.div
+					whileHover={{ rotate: 360 }}
+					transition={{ duration: 0.5 }}
+				>
+					<CyberIcon name="eye-off" size={24} color="cyan" />
+				</motion.div>
 			</Button>
 			<Button
 				size="sm"
@@ -32,9 +40,14 @@ function ThemeSwitcher({ className }: Props) {
 				data-bs-original-title="Enable dark mode"
 				onClick={() => setTheme("light")}
 			>
-				<IconSun width={24} />
+				<motion.div
+					whileHover={{ rotate: 360 }}
+					transition={{ duration: 0.5 }}
+				>
+					<CyberIcon name="zap" size={24} color="yellow" />
+				</motion.div>
 			</Button>
-		</div>
+		</motion.div>
 	);
 }
 

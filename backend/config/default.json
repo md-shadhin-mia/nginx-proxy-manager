@@ -1,10 +1,12 @@
 {
   "database": {
-    "engine": "mysql2",
-    "host": "db",
-    "name": "npm",
-    "user": "npm",
-    "password": "npm",
-    "port": 3306
+    "engine": "knex-native",
+    "knex": {
+      "client": "better-sqlite3",
+      "connection": {
+        "filename": "/tmp/npm-data/database.sqlite"
+      },
+      "useNullAsDefault": true
+    }
   }
 }

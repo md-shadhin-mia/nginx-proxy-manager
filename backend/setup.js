@@ -77,23 +77,48 @@ const setupDefaultUser = async () => {
  * @returns {Promise}
  */
 const setupDefaultSettings = async () => {
-	const row = await settingModel
-		.query()
-		.select("id")
-		.where({ id: "default-site" })
-		.first();
+	const defaultSettings = [
+		{
+			id: "default-site",
+			name: "Default Site",
+			description: "What to show when Nginx is hit with an unknown Host",
+			value: "congratulations",
+			meta: {},
+		},
+		{
+			id: "auto-renew-enabled",
+			name: "Auto Renew Enabled",
+			description: "Automatically renew Let's Encrypt certificates before expiry",
+			value: "true",
+			meta: {},
+		},
+		{
+			id: "auto-renew-days-before",
+			name: "Auto Renew Days Before Expiry",
+			description: "Number of days before expiry to trigger auto renewal",
+			value: "30",
+			meta: {},
+		},
+		{
+			id: "auto-renew-check-interval",
+			name: "Auto Renew Check Interval (hours)",
+			description: "How often to check for certificates needing renewal",
+			value: "1",
+			meta: {},
+		},
+	];
 
-	if (!row?.id) {
-		await settingModel
+	for (const setting of defaultSettings) {
+		const row = await settingModel
 			.query()
-			.insert({
-				id: "default-site",
-				name: "Default Site",
-				description: "What to show when Nginx is hit with an unknown Host",
-				value: "congratulations",
-				meta: {},
-			});
-		logger.info("Default settings added");
+			.select("id")
+			.where({ id: setting.id })
+			.first();
+
+		if (!row?.id) {
+			await settingModel.query().insert(setting);
+			logger.info(`Default setting added: ${setting.name}`);
+		}
 	}
 };
 
